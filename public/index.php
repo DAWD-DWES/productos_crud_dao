@@ -4,11 +4,13 @@ session_start();
 require_once '../src/autoload.php';
 require_once '../src/error_handler.php';
 
+define('ERROR_MESSAGE', "Credenciales Incorrectas");
+
 $bd = BD::getConexion();
 
 $usuarioDAO = new UsuarioDAO($bd);
 
-if (isset($_REQUEST['logout'])) {
+if (filter_has_var(INPUT_GET, 'logout')) {
     session_unset();
     session_destroy();
     $params = session_get_cookie_params();
@@ -73,7 +75,7 @@ if (isset($_REQUEST['logout'])) {
                     </div>
                     <?php if (isset($errorCredenciales) && $errorCredenciales): ?>
                         <div class="alert alert-danger" role="alert">
-                            Credenciales incorrectos
+                            <h1><?= ERROR_MESSAGE ?></h1>
                         </div>
                     <?php endif ?>
                     <div class="form-group">
