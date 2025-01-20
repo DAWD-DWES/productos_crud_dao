@@ -47,15 +47,16 @@ if (filter_has_var(INPUT_POST, 'crear')) {
             $producto->setId($productoId);
             $productoInsertado = true;
         } catch (PDOException $ex) {
-            if ($ex->getcode() == 23000) {
-                $errorDuplicadoNombreCorto = true;
-            }
             error_log("Error al crear el producto " . $ex->getMessage());
-            $productoInsertado = false;
+            if ($ex->getcode() == 23000) { // Clave duplicada
+                $errorDuplicadoNombreCorto = true;
+            } else {
+                $productoInsertado = false;
+            }
         }
     }
 }
-if ($error ?? true) {
+if ($errorDuplicadoNombreCorto ?? $error ?? true) {
     try {
         $familias = $familiaDAO->recuperaTodo();
     } catch (PDOException $ex) {
@@ -91,10 +92,10 @@ if ($error ?? true) {
             <?php if ($productoInsertado ?? false): ?>
                 <h3 class="text-center mt-2 fw-bold">Producto creado con éxito</h3>
                 <a href="index.php" class="btn btn-warning">Volver</a>
-            <?php elseif (!($productoInsertado ?? true)): ?>
-                <h3 class="text-center mt-2 fw-bold">Ha habido un problema para crear el producto</h3>
-                <a href="index.php" class="btn btn-warning">Volver</a>
             <?php else: ?>
+                <?php if (!($productoInsertado ?? true)): ?>
+                    <h3 class="text-center mt-2 fw-bold">Ha habido un problema para crear el producto</h3>
+                <?php endif ?>
                 <form name="crear" method="POST" action="<?= $_SERVER['PHP_SELF'] ?>">
                     <div class="row g-3">
                         <div class="col-md-6 align-items-center mb-3">
@@ -108,7 +109,8 @@ if ($error ?? true) {
                         </div>
                         <div class="col-md-6 align-items-center mb-3">
                             <label for="nombre_corto" class="form-label">Nombre Corto: </label>
-                            <input type="text" class="form-control <?= (isset($nombreCortoErr) ? (($nombreCortoErr) ? "is-invalid" : "is-valid") : (isset($errorDuplicadoNombreCorto) ? "in-invalid" : "")) ?>" id="nombre_corto" placeholder="Nombre Corto"
+                            <input type="text" class="form-control <?= (isset($nombreCortoErr) ? (($errorDuplicadoNombreCorto ?? $nombreCortoErr ?? false) ? "is-invalid" : "is-valid") : "") ?>" 
+                                   id="nombre_corto" placeholder="Nombre Corto"
                                    name="nombre_corto" value="<?= htmlspecialchars($nombreCorto ?? '', ENT_NOQUOTES, 'UTF-8') ?>">
                             <div class="invalid-feedback">
                                 <p><?= (isset($errorDuplicadoNombreCorto) && $errorDuplicadoNombreCorto) ? NOMBRE_CORTO_DUPLICADO : NOMBRE_CORTO_INVALIDO ?></p>

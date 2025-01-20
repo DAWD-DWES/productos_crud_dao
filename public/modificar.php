@@ -49,11 +49,12 @@ if (filter_has_var(INPUT_POST, 'modificar')) {
             $productoDAO->modifica($producto);
             $productoModificado = true;
         } catch (PDOException $ex) {
+            error_log("Error al modificar el producto " . $ex->getMessage());
             if ($ex->getcode() == 23000) {
                 $errorDuplicadoNombreCorto = true;
+            } else {
+                $productoModificado = false;
             }
-            error_log("Error al modificar el producto " . $ex->getMessage());
-            $productoModificado = false;
         }
     }
 } else {
@@ -66,7 +67,7 @@ if (filter_has_var(INPUT_POST, 'modificar')) {
     }
 }
 
-if ($error ?? true) {
+if ($errorDuplicadoNombreCorto ?? $error ?? true) {
     try {
         $familias = $familiaDAO->recuperaTodo();
     } catch (PDOException $ex) {
@@ -102,13 +103,13 @@ if ($error ?? true) {
             <?php if ($productoModificado ?? false): ?>
                 <h3 class="text-center mt-2 fw-bold">Producto modificado con éxito</h3>
                 <a href="index.php" class="btn btn-warning">Volver</a>
-            <?php elseif (!($productoModificado ?? true)): ?>
-                <h3 class="text-center mt-2 fw-bold">Ha habido un problema para modificar el producto</h3>
-                <a href="index.php" class="btn btn-warning">Volver</a>
-            <?php elseif (!($productoEncontrado ?? true)) : ?>
-                <h3 class="text-center mt-2 fw-bold">Ha habido un problema para encontrar el producto</h3>
-                <a href="index.php" class="btn btn-warning">Volver</a>
             <?php else: ?>
+                <?php if (!($productoModificado ?? true)): ?>
+                    <h3 class="text-center mt-2 fw-bold">Ha habido un problema para modificar el producto</h3>
+                <?php endif ?>
+                <?php if (!($productoEncontrado ?? true)) : ?>
+                    <h3 class="text-center mt-2 fw-bold">Ha habido un problema para encontrar el producto</h3>
+                <?php endif ?>
                 <form method="POST" action="<?= "{$_SERVER['PHP_SELF']}" ?>">
                     <div class="row g-3">
                         <div class="col-md-6 align-items-center mb-3">
@@ -123,7 +124,7 @@ if ($error ?? true) {
                         </div>
                         <div class="col-md-6 align-items-center mb-3">
                             <label for="nombre_corto">Nombre Corto</label>
-                            <input type="text" class="form-control <?= (isset($nombreCortoErr) || isset($errorDuplicadoNombreCorto) ? (($nombreCortoErr ?? $errorDuplicadoNombreCorto ?? false) ? "is-invalid" : "is-valid") : "") ?>"
+                            <input type="text" class="form-control <?= (isset($nombreCortoErr) ? (($errorDuplicadoNombreCorto ?? $nombreCortoErr ?? false) ? "is-invalid" : "is-valid") : "") ?>"
                                    id="nombre_corto" placeholder="Nombre corto" name="nombre_corto"
                                    value = "<?= htmlspecialchars($nombreCorto ?? $producto->getNombreCorto() ?? '', ENT_NOQUOTES, 'UTF-8') ?>" >
                             <div class="invalid-feedback">
