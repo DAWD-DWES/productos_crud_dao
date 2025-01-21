@@ -39,36 +39,34 @@ $usuario = ($_SESSION['usuario']) ?? false;
         <title>Detalle</title>
     </head>
     <body class="bg-info">
-        <div class="float-end d-inline-flex m-3">
+        <div class="d-flex justify-content-end m-3 align-items-baseline">
             <i class="bi-person-fill fs-2 me-3"></i>
-            <input type="text" size='10px' value="<?= $usuario ?: 'invitado' ?>"
-                   class="form-control mr-2 bg-transparent text-white" disabled>
-                   <?php if ($usuario): ?>
+            <p class="me-5 bg-transparent text-white"><?= $usuario ?: 'invitado' ?></p>
+            <?php if ($usuario): ?>
                 <a href='index.php?logout' class='btn btn-danger mr-2'>Salir</a>
             <?php else: ?>
                 <a href='index.php' class='btn btn-primary mr-2'>Login</a>
             <?php endif ?>
         </div>
-        <br><br>
         <h3 class="text-center mt-2 fw-bold">Detalle Producto</h3>
         <div class="container mt-3">
             <?php if (!($productoEncontrado ?? true)): ?>
                 <h3 class="text-center mt-2 fw-bold">Producto no encontrado</h3>
-                <a href="listado.php" class="btn btn-warning">Volver</a>
+            <?php else: ?>
+                <div class="card text-white bg-info mt-5 mx-auto">
+                    <div class="card-header text-center text-weight-bold">
+                        <?= $producto->getNombre() ?>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-center"><?= "Codigo: {$producto->getId()}" ?></h5>
+                        <p class="card-text"><b>Nombre: </b><?= htmlspecialchars($producto->getNombre(), ENT_NOQUOTES, 'UTF-8') ?></p>
+                        <p class="card-text"><b>Nombre Corto: </b> <?= htmlspecialchars($producto->getNombreCorto(), ENT_NOQUOTES, 'UTF-8') ?></p>
+                        <p class="card-text"><b>Codigo Familia: </b><?= htmlspecialchars($producto->getFamilia(), ENT_NOQUOTES, 'UTF-8') ?></p>
+                        <p class="card-text"><b>PVP (€): </b><?= htmlspecialchars($producto->getPvp(), ENT_NOQUOTES, 'UTF-8') ?></p>
+                        <p class="card-text"><b>Descripción: </b><?= htmlspecialchars($producto->getDescripcion(), ENT_NOQUOTES, 'UTF-8') ?></p>
+                    </div>
+                </div>
             <?php endif ?>
-            <div class="card text-white bg-info mt-5 mx-auto">
-                <div class="card-header text-center text-weight-bold">
-                    <?= $producto->getNombre() ?>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title text-center"><?= "Codigo: {$producto->getId()}" ?></h5>
-                    <p class="card-text"><b>Nombre: </b><?= htmlspecialchars($producto->getNombre(), ENT_NOQUOTES, 'UTF-8') ?></p>
-                    <p class="card-text"><b>Nombre Corto: </b> <?= htmlspecialchars($producto->getNombreCorto(), ENT_NOQUOTES, 'UTF-8') ?></p>
-                    <p class="card-text"><b>Codigo Familia: </b><?= htmlspecialchars($producto->getFamilia(), ENT_NOQUOTES, 'UTF-8') ?></p>
-                    <p class="card-text"><b>PVP (€): </b><?= htmlspecialchars($producto->getPvp(), ENT_NOQUOTES, 'UTF-8') ?></p>
-                    <p class="card-text"><b>Descripción: </b><?= htmlspecialchars($producto->getDescripcion(), ENT_NOQUOTES, 'UTF-8') ?></p>
-                </div>
-            </div>
             <div class="container mt-5 text-center">
                 <a href="listado.php" class="btn btn-warning">Volver</a>
             </div>

@@ -33,17 +33,15 @@ $usuario = ($_SESSION['usuario']) ?? false;
         <title>CRUD Productos</title>
     </head>
     <body class="bg-info">
-        <div class="float-end d-inline-flex m-5">
+        <div class="d-flex justify-content-end m-3 align-items-baseline">
             <i class="bi-person-fill fs-2 me-3"></i>
-            <input type="text" size='10px' value="<?= $usuario ?: 'invitado' ?>"
-                   class="form-control me-2 bg-transparent text-white" disabled>
-                   <?php if ($usuario): ?>
-                <a href='index.php?logout' class='btn btn-danger me-2'>Salir</a>
+            <p class="me-5 bg-transparent text-white"><?= $usuario ?: 'invitado' ?></p>
+            <?php if ($usuario): ?>
+                <a href='index.php?logout' class='btn btn-danger mr-2'>Salir</a>
             <?php else: ?>
-                <a href='index.php' class='btn btn-primary me-2'>Login</a>
+                <a href='index.php' class='btn btn-primary mr-2'>Login</a>
             <?php endif ?>
         </div>
-        <br><br>
         <h3 class="text-center mt-2 fw-bold">Gestión de Productos</h3>
         <div class="container mt-3">
             <a href="crear.php?pet_crear"  class="btn btn-success mt-2 mb-2 <?= (!$usuario ? 'disabled' : '') ?>">Crear</a>

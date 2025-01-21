@@ -20,6 +20,10 @@ define('NOMBRE_CORTO_DUPLICADO', '**Nombre corto duplicado');
 define('PVP_INVALIDO', '**PVP inválido');
 define('DESCRIPCION_INVALIDO', '**Descripción inválida');
 
+define("REGEXP_NOMBRE", "/^[\w\s\-_áéíóúñ]{2,100}$/");
+define("REGEXP_NOMBRE_CORTO", "/^[a-zA-Z0-9áéíóúñ]{2,15}$/");
+define("REGEXP_DESCRIPCION", "/^[\s\S]{0,500}$/");
+
 $usuario = ($_SESSION['usuario']) ?? false;
 $bd = BD::getConexion();
 $productoDAO = new ProductoDAO($bd);
@@ -29,15 +33,15 @@ if (filter_has_var(INPUT_POST, 'crear')) {
 //recogemos los datos del formulario
     $nombre = ucwords(trim(filter_input(INPUT_POST, 'nombre', FILTER_UNSAFE_RAW)));
     $nombreErr = filter_var($nombre, FILTER_VALIDATE_REGEXP,
-                    ['options' => ['regexp' => "/^[\w\s\-_áéíóúñ]{2,100}$/"]]) === false;
+                    ['options' => ['regexp' => REGEXP_NOMBRE]]) === false;
     $nombreCorto = strtoupper(trim(filter_input(INPUT_POST, 'nombre_corto', FILTER_UNSAFE_RAW)));
     $nombreCortoErr = filter_var($nombreCorto, FILTER_VALIDATE_REGEXP,
-                    ['options' => ['regexp' => "/^[a-zA-Z0-9áéíóúñ]{2,15}$/"]]) === false;
+                    ['options' => ['regexp' => REGEXP_NOMBRE_CORTO]]) === false;
     $pvp = filter_input(INPUT_POST, 'pvp', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $pvpErr = filter_var($pvp, FILTER_VALIDATE_FLOAT, ["options" => ["min_range" => 0]]) === false;
     $descripcion = trim(filter_input(INPUT_POST, 'descripcion', FILTER_UNSAFE_RAW));
     $descripcionErr = filter_var($descripcion, FILTER_VALIDATE_REGEXP,
-                    ['options' => ['regexp' => "/^[\w\s\-_áéíóúñ]{0,200}$/"]]) === false;
+                    ['options' => ['regexp' => REGEXP_DESCRIPCION]]) === false;
     $familiaCodigo = filter_input(INPUT_POST, 'familia_codigo', FILTER_UNSAFE_RAW);
     $error = array_sum(compact(["nombreErr", "nombreCortoErr", "pvpErr", "descripcionErr"])) > 0;
     if (!$error) {
@@ -56,7 +60,7 @@ if (filter_has_var(INPUT_POST, 'crear')) {
         }
     }
 }
-if ($errorDuplicadoNombreCorto ?? $error ?? true) {
+if (!($productoInsertado ?? false)) {
     try {
         $familias = $familiaDAO->recuperaTodo();
     } catch (PDOException $ex) {
@@ -80,10 +84,9 @@ if ($errorDuplicadoNombreCorto ?? $error ?? true) {
         <title>Crear Producto</title>
     </head>
     <body class="bg-info">
-        <div class="float-end d-inline-flex m-3">
+        <div class="d-flex justify-content-end m-3 align-items-baseline">
             <i class="bi-person-fill fs-2 me-3"></i>
-            <input type="text" value="<?= $usuario ?>"
-                   class="form-control form-control-sm me-2 bg-transparent text-white" disabled>
+            <p class="me-5 bg-transparent text-white"><?= $usuario ?> </p>
             <a href='index.php?logout' class='btn btn-danger me-2'>Salir</a>
         </div>
         <br><br>
@@ -93,7 +96,7 @@ if ($errorDuplicadoNombreCorto ?? $error ?? true) {
                 <h3 class="text-center mt-2 fw-bold">Producto creado con éxito</h3>
                 <a href="index.php" class="btn btn-warning">Volver</a>
             <?php else: ?>
-                <?php if (!($productoInsertado ?? true)): ?>
+                <?php if (!isset($errorDuplicadoNombreCorto) && !($productoInsertado ?? true)): ?>
                     <h3 class="text-center mt-2 fw-bold">Ha habido un problema para crear el producto</h3>
                 <?php endif ?>
                 <form name="crear" method="POST" action="<?= $_SERVER['PHP_SELF'] ?>">
@@ -109,11 +112,17 @@ if ($errorDuplicadoNombreCorto ?? $error ?? true) {
                         </div>
                         <div class="col-md-6 align-items-center mb-3">
                             <label for="nombre_corto" class="form-label">Nombre Corto: </label>
-                            <input type="text" class="form-control <?= (isset($nombreCortoErr) ? (($errorDuplicadoNombreCorto ?? $nombreCortoErr ?? false) ? "is-invalid" : "is-valid") : "") ?>" 
+                            <input type="text" class="form-control <?= (isset($nombreCortoErr) ? (($nombreCortoErr || ($errorDuplicadoNombreCorto ?? false)) ? "is-invalid" : "is-valid") : "") ?>" 
                                    id="nombre_corto" placeholder="Nombre Corto"
                                    name="nombre_corto" value="<?= htmlspecialchars($nombreCorto ?? '', ENT_NOQUOTES, 'UTF-8') ?>">
                             <div class="invalid-feedback">
-                                <p><?= (isset($errorDuplicadoNombreCorto) && $errorDuplicadoNombreCorto) ? NOMBRE_CORTO_DUPLICADO : NOMBRE_CORTO_INVALIDO ?></p>
+                                <p><?=
+                                    match (true) {
+                                        $nombreCortoErr ?? false => NOMBRE_CORTO_INVALIDO,
+                                        $errorDuplicadoNombreCorto ?? false => NOMBRE_CORTO_DUPLICADO,
+                                        default => ''
+                                    }
+                                    ?></p>
                             </div>
                         </div>
                     </div>
@@ -150,7 +159,9 @@ if ($errorDuplicadoNombreCorto ?? $error ?? true) {
                         </div>                    
                     </div>
                     <input type="submit" class="btn btn-primary m-3" name="crear" value="Crear">
-                    <input type="reset" value="Limpiar" class="btn btn-success me-3">
+                    <input type="reset" value="Limpiar" class="btn btn-success m-3" onclick="this.querySelectorAll('input[type=text]').forEach(function (input, i) {
+                                    input.value = '';
+                                })">
                     <a href="index.php" class="btn btn-warning">Volver</a>
                 </form>
             <?php endif ?>
