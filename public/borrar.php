@@ -43,7 +43,7 @@ $usuario = ($_SESSION['usuario']) ?? false;
     <body class="bg-info">
         <div class="d-flex justify-content-end m-3 align-items-baseline">
             <i class="bi-person-fill fs-2 me-3"></i>
-            <p class="me-5 bg-transparent text-white"><?= $usuario ?> </p>
+            <p class="me-5 bg-transparent text-white border border-white rounded px-5"><?= $usuario ?> </p>
             <a href='index.php?logout' class='btn btn-danger me-2'>Salir</a>
         </div>
         <h3 class="text-center mt-2 fw-bold">Borrar Producto</h3>

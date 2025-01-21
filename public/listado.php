@@ -35,7 +35,7 @@ $usuario = ($_SESSION['usuario']) ?? false;
     <body class="bg-info">
         <div class="d-flex justify-content-end m-3 align-items-baseline">
             <i class="bi-person-fill fs-2 me-3"></i>
-            <p class="me-5 bg-transparent text-white"><?= $usuario ?: 'invitado' ?></p>
+            <p class="me-5 bg-transparent text-white border border-white rounded px-5"><?= $usuario ?: 'invitado' ?></p>
             <?php if ($usuario): ?>
                 <a href='index.php?logout' class='btn btn-danger mr-2'>Salir</a>
             <?php else: ?>
