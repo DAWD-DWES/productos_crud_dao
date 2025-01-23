@@ -20,10 +20,12 @@ if (filter_has_var(INPUT_GET, 'logout')) {
     );
 } elseif (isset($_SESSION['usuario'])) {
     header('Location:./listado.php');
-} elseif (isset($_POST['login'])) {
+} elseif (filter_has_var(INPUT_POST, 'login')) {
     $nombre = trim(filter_input(INPUT_POST, 'usuario'));
+    $nombreErr = strlen($nombre) === 0;
     $pwd = trim(filter_input(INPUT_POST, 'pass'));
-    $errorLoginForm = (0 === strlen($nombre) || 0 === strlen($pwd));
+    $pwdErr = strlen($pwd) === 0;
+    $errorLoginForm = $nombreErr || $pwdErr;
     if (!$errorLoginForm) {
         $usuario = $usuarioDAO->recuperaPorCredencial($nombre, $pwd);
         $errorCredenciales = is_null($usuario);
@@ -47,42 +49,41 @@ if (filter_has_var(INPUT_GET, 'logout')) {
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-        <!--Fontawesome CDN-->
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-              integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
         <title>Login</title>
     </head>
-    <body style="background:silver;" class="d-flex justify-content-center h-100">
-        <div class="mt-5 card" style="width: 20rem;">
-            <div class="card-header">
-                <h3>Login</h3>
-            </div>
-            <div class="card-body">
-                <form name='login' class="p-3" method='POST' action='<?= $_SERVER['PHP_SELF']; ?>'>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" class="<?= 'form-control ' . ((isset($errorLoginForm) && (empty($nombreUsuario))) ? 'is-invalid' : ''); ?>" placeholder="usuario" name='usuario' >
-                        <div class="invalid-feedback">
-                            <p>Introduce el usuario</p>
-                        </div>
+    <body style="background:silver;">
+        <div class="container mt-5">
+            <div class="d-flex justify-content-center mt-5 h-100">
+                <div class="mt-5 card" style="width: 20rem;">
+                    <div class="card-header">
+                        <h3>Login</h3>
                     </div>
-                    <div class="input-group mb-3">                 
-                        <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        <input type="password" class="<?= 'form-control ' . ((isset($errorLoginForm) && (empty($pass))) ? 'is-invalid' : ''); ?>" placeholder="contraseña" name='pass' >
-                        <div class="invalid-feedback">
-                            <p>Introduce el password</p>
-                        </div>
+                    <div class="card-body">
+                        <form name='login' class="p-3" method='POST' action='<?= $_SERVER['PHP_SELF']; ?>'>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="<?= 'form-control ' . ((isset($errorLoginForm) && (empty($nombreUsuario))) ? 'is-invalid' : ''); ?>" placeholder="usuario" name='usuario' >
+                                <div class="invalid-feedback">
+                                    <p>Introduce el usuario</p>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">                 
+                                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                <input type="password" class="<?= 'form-control ' . ((isset($errorLoginForm) && (empty($pass))) ? 'is-invalid' : ''); ?>" placeholder="contraseña" name='pass' >
+                                <div class="invalid-feedback">
+                                    <p>Introduce el password</p>
+                                </div>
+                            </div>
+                            <?php if (isset($errorCredenciales) && $errorCredenciales): ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <h1><?= ERROR_MESSAGE ?></h1>
+                                </div>
+                            <?php endif ?>
+                            <input type="submit" value="Acceso como Invitado" class="btn btn-info" name='invitado'>
+                            <input type="submit" value="Login" class="btn float-end btn-success" name='login'>
+                        </form>
                     </div>
-                    <?php if (isset($errorCredenciales) && $errorCredenciales): ?>
-                        <div class="alert alert-danger" role="alert">
-                            <h1><?= ERROR_MESSAGE ?></h1>
-                        </div>
-                    <?php endif ?>
-                    <div class="form-group">
-                        <input type="submit" value="Acceso como Invitado" class="btn btn-info" name='invitado'>
-                        <input type="submit" value="Login" class="btn float-end btn-success" name='login'>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </body>

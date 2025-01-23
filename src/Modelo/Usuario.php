@@ -2,9 +2,9 @@
 
 class Usuario {
 
-    private $id;
-    private $usuario;
-    private $pass;
+    private int $id;
+    private string $usuario;
+    private string $pass;
 
     public function __construct(string $usuario = null, string $pass = null) {
         if (func_num_args() > 0) {

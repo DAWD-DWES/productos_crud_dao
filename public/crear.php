@@ -20,9 +20,9 @@ define('NOMBRE_CORTO_DUPLICADO', '**Nombre corto duplicado');
 define('PVP_INVALIDO', '**PVP inválido');
 define('DESCRIPCION_INVALIDO', '**Descripción inválida');
 
-define("REGEXP_NOMBRE", "/^[\w\s\-_áéíóúñ]{2,100}$/");
-define("REGEXP_NOMBRE_CORTO", "/^[a-zA-Z0-9áéíóúñ]{2,15}$/");
-define("REGEXP_DESCRIPCION", "/^[\s\S]{0,500}$/");
+define("REGEXP_NOMBRE", "/^[\w\s\-_áéíóúñ.,;:!?'(){}[\]+]{2,100}$/");
+define("REGEXP_NOMBRE_CORTO", "/^[\w\s\-_áéíóúñ.,;:!?'(){}[\]]{2,15}$/");
+define("REGEXP_DESCRIPCION", "/^[\s\S]*$/");
 
 $usuario = ($_SESSION['usuario']) ?? false;
 $bd = BD::getConexion();
@@ -89,7 +89,6 @@ if (!($productoInsertado ?? false)) {
             <p class="me-5 bg-transparent text-white border border-white rounded px-5"><?= $usuario ?> </p>
             <a href='index.php?logout' class='btn btn-danger me-2'>Salir</a>
         </div>
-        <br><br>
         <h3 class="text-center mt-2 fw-bold">Crear Producto</h3>
         <div class="container mt-3">
             <?php if ($productoInsertado ?? false): ?>
