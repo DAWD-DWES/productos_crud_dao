@@ -4,23 +4,23 @@ class UsuarioDAO {
 
     private PDO $bd;
 
-    function __construct(PDO $bd) {
+    public function __construct(PDO $bd) {
         $this->bd = $bd;
     }
 
-    function crea(Usuario $usuario): string {
+    public function crea(Usuario $usuario): string {
         
     }
 
-    function modifica(Usuario$usuario): void {
+    public function modifica(Usuario$usuario): void {
         
     }
 
-    function elimina(string $nombre): void {
+    public function elimina(string $nombre): void {
         
     }
 
-    function recuperaPorCredencial(string $nombre, string $pwd): ?Usuario {
+    public function recuperaPorCredencial(string $nombre, string $pwd): ?Usuario {
         $pwdHashed = hash('sha256', $pwd);
         $sql = 'select * from usuarios where usuario=:nombre and pass=:pwdHashed';
         $sth = $this->bd->prepare($sql);

@@ -8,23 +8,23 @@ class FamiliaDAO {
 
     private PDO $bd;
 
-    function __construct(PDO $bd) {
+    public function __construct(PDO $bd) {
         $this->bd = $bd;
     }
 
-    function crea(Familia $familia): void {
+    public function crea(Familia $familia): void {
         
     }
 
-    function modifica(Familia $familia): void {
+    public function modifica(Familia $familia): void {
         
     }
 
-    function elimina(int $id): void {
+    public function elimina(int $id): void {
         
     }
 
-    function recuperaPorId(int $id): Familia {
+    public function recuperaPorId(int $id): Familia {
         
     }
     
@@ -33,7 +33,7 @@ class FamiliaDAO {
      * @return array
      */
 
-    function recuperaTodo(): array {
+    public function recuperaTodo(): array {
         $sql = "select * from familias order by nombre";
         $stmt = $this->bd->prepare($sql);
         $stmt->execute();
